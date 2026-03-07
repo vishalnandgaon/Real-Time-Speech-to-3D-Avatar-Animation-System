@@ -1,28 +1,26 @@
 from fastapi import FastAPI, WebSocket
-import whisper
-from transformers import pipeline
+from deep_translator import GoogleTranslator
+from speech import speech_to_text
+from emotion import detect_emotion
 import json
 import tempfile
 import os
 
 app = FastAPI()
+
 @app.get("/")
 def home():
     return {"message": "Backend is working 🚀"}
 
-# Load Whisper Model
-model = whisper.load_model("base")
-
-# Load Emotion Model
-emotion_pipeline = pipeline("text-classification",
-                            model="j-hartmann/emotion-english-distilroberta-base",
-                            return_all_scores=False)
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+
     await websocket.accept()
 
     while True:
+
+        # Receive audio
         audio_bytes = await websocket.receive_bytes()
 
         # Save temp audio file
@@ -30,21 +28,28 @@ async def websocket_endpoint(websocket: WebSocket):
             tmp.write(audio_bytes)
             tmp_path = tmp.name
 
-        # Speech Recognition
-        result = model.transcribe(tmp_path,language="en")
-        text = result["text"]
-        language = "en"
+        # 🎤 Speech to Text
+        text, language = speech_to_text(tmp_path)
 
-        # Emotion Detection
-        emotion_result = emotion_pipeline(text)
-        emotion = emotion_result[0]['label']
+        # 🌍 Translate to English (for emotion model)
+        translated_text = GoogleTranslator(
+            source='auto',
+            target='en'
+        ).translate(text)
 
+        # 😊 Emotion Detection
+        emotion = detect_emotion(translated_text)
+
+        # Delete temp file
         os.remove(tmp_path)
 
+        # Send response
         response = {
             "text": text,
             "language": language,
             "emotion": emotion
         }
 
-        await websocket.send_text(json.dumps(response))
+        await websocket.send_text(
+            json.dumps(response, ensure_ascii=False)
+        )

@@ -1,0 +1,62 @@
+# Tech Stack
+
+Real-Time Speech to 3D Avatar Animation System
+
+## Programming Language
+
+* Python
+* JavaScript
+
+## Backend
+
+* FastAPI
+* WebSockets
+* Uvicorn (ASGI server)
+
+## AI / Machine Learning
+
+* OpenAI Whisper (Speech-to-Text)
+* Hugging Face Transformers
+* DistilRoBERTa Emotion Detection Model
+  (j-hartmann/emotion-english-distilroberta-base)
+* Deep Translator (Google Translator)
+
+## Frontend
+
+* HTML5
+* CSS3
+* JavaScript
+
+## 3D Graphics & Avatar Rendering
+
+* Three.js
+* WebGL
+* GLTFLoader
+* GLTF / GLB 3D Model Format
+
+## Avatar Creation
+
+* Ready Player Me
+
+## Browser APIs
+
+* MediaRecorder API (microphone audio capture)
+* WebSocket API (real-time communication)
+
+## Animation & Future Components
+
+* Facial Expression Animation
+* Lip Sync Animation
+* Phoneme Mapping
+
+## Development Tools
+
+* VS Code
+* Git
+* GitHub
+* Python Virtual Environment (.venv)
+
+## Local Development Server
+
+* Python HTTP Server
+* Uvicorn Development Server

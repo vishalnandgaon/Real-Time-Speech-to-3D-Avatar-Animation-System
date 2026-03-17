@@ -1,21 +1,42 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Speech to Emotion Test</title>
-    <link rel="stylesheet" href="style.css">
+
+```
+<!-- CSS -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- GLTF Loader -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+```
+
 </head>
 
 <body>
 
 <h2>Speech to Emotion Test</h2>
 
-<button onclick="start()">Start Recording</button>
-<button onclick="stop()" id="stopBtn" disabled>Stop Recording</button>
+<button onclick="start()">Start Recording</button> <button onclick="stop()" id="stopBtn" disabled>Stop Recording</button>
 
 <p id="result"></p>
 
+<!-- Avatar display area -->
+
+<div id="avatar-container"></div>
+
+<!-- Project scripts -->
+
 <script src="script.js"></script>
 
+<script src="avatar.js"></script>
+
 </body>
+
 </html>

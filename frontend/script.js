@@ -4,6 +4,12 @@ let socket;
 
 async function start() {
 
+    // 🔓 Unlock audio autoplay
+    document.body.addEventListener('click', () => {
+        const dummyAudio = new Audio();
+        dummyAudio.play().catch(() => {});
+    }, { once: true });
+
     socket = new WebSocket("ws://127.0.0.1:8000/ws");
 
     socket.onopen = async function() {
@@ -35,8 +41,24 @@ async function start() {
     };
 
     socket.onmessage = function(event) {
-        document.getElementById("result").innerText = event.data;
-    };
+
+    const data = JSON.parse(event.data);
+
+    // 📝 Show text
+    document.getElementById("result").innerText =
+        "Text: " + data.text +
+        "\nLanguage: " + data.language +
+        "\nEmotion: " + data.emotion;
+
+    // 🔊 Play audio
+    const audio = new Audio("data:audio/mp3;base64," + data.audio);
+
+    audio.play().then(() => {
+        console.log("Audio playing ✅");
+    }).catch(err => {
+        console.log("Audio play error ❌:", err);
+    });
+};
 
     socket.onerror = function(error) {
         console.log("WebSocket Error:", error);
@@ -49,7 +71,7 @@ async function start() {
 
 function stop() {
 
-    if(mediaRecorder){
+    if (mediaRecorder) {
         mediaRecorder.stop();
         console.log("Recording stopped");
     }

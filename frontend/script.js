@@ -14,6 +14,9 @@ async function start() {
 
         mediaRecorder.start();
 
+        document.getElementById("wave").style.display = "flex";
+        document.getElementById("statusText").innerText = "Recording...";
+
         console.log("Recording started");
 
         document.getElementById("stopBtn").disabled = false;
@@ -51,6 +54,8 @@ function stop() {
 
     if(mediaRecorder){
         mediaRecorder.stop();
+        document.getElementById("wave").style.display = "none";
+        document.getElementById("statusText").innerText = "Stopped";
         console.log("Recording stopped");
     }
 

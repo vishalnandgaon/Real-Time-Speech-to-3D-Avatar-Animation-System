@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Speech to Emotion Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Emotion AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Speech to Emotion Test</h2>
+<div class="container">
+    <h1>🎙️ Speech to Emotion</h1>
+    <p class="subtitle">Analyze your voice and detect emotions in real-time</p>
 
-<button onclick="start()">Recording started</button>
-<button onclick="stop()" id="stopBtn" disabled>Stop Recording</button>
+    <div class="card">
+        <button class="start-btn" onclick="start()">Start Recording</button>
+        <button class="stop-btn" onclick="stop()" id="stopBtn" disabled>Stop</button>
 
-<p id="result"></p>
+        <div class="status">
+            <span id="statusText">Idle</span>
+        </div>
+
+        <p id="result">Your emotion will appear here...</p>
+    </div>
+</div>
 
 <script src="script.js"></script>
 

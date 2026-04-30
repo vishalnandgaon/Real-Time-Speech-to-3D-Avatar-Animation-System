@@ -2,35 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Speech to Emotion Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Avatar Sync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/app/favicon.ico" type="image/x-icon">
     <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
   }
 }
-</script>
-    <!-- CSS -->
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
 
-    <h2>Speech to Emotion Test</h2>
+    <div class="app-shell">
+        <header class="top-bar">
+            <div class="logo-area">
+                <div class="logo-icon"></div>
+                <h1>Real-Time <span>Avatar Sync</span></h1>
+            </div>
+            <div id="statusBadge" class="badge idle">
+                <span class="pulse-dot"></span>
+                <span class="status-text">Idle</span>
+            </div>
+        </header>
 
-    <button onclick="start()">Start Recording</button>
-    <button onclick="stop()" id="stopBtn" disabled>Stop Recording</button>
+        <main class="main-grid">
+            <div class="left-column">
+                <section class="panel glass control-panel">
+                    <div class="panel-header">
+                        <h2>System Controls</h2>
+                        <p class="subtitle">Initialize microphone to begin speech-to-avatar sync.</p>
+                    </div>
+                    <div class="controls">
+                        <button id="startBtn" class="btn primary" onclick="start()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+                            Start Live Sync
+                        </button>
+                        <button id="stopBtn" class="btn secondary" onclick="stop()" disabled>Stop</button>
+                    </div>
+                    
+                    <div class="kpis">
+                        <div class="kpi-card">
+                            <div class="kpi-icon language-icon"></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Language</span>
+                                <span id="languageValue" class="kpi-value">-</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon emotion-icon"></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Emotion</span>
+                                <span id="emotionValue" class="kpi-value">Neutral</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-    <p id="result"></p>
+                <section class="panel glass transcript-panel">
+                    <div class="transcript-section">
+                        <h3><span class="dot primary"></span> Original Speech</h3>
+                        <p id="originalText" class="transcript placeholder">Waiting for speech input...</p>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="transcript-section">
+                        <h3><span class="dot secondary"></span> English Translation</h3>
+                        <p id="englishText" class="transcript placeholder">Translation will appear here...</p>
+                    </div>
+                </section>
+            </div>
 
-    <!-- Avatar display area -->
-    <div id="avatar-container"></div>
+            <div class="right-column">
+                <section class="panel glass avatar-panel">
+                    <div id="avatar-container"></div>
+                    <div class="avatar-overlay">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 
-    <!-- Project scripts -->
     <script src="script.js"></script>
-
-    <!-- ✅ Module-based avatar script -->
     <script type="module" src="avatar.js"></script>
-
 </body>
 </html>

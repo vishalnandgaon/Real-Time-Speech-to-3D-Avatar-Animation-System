@@ -1,55 +1,74 @@
-from fastapi import FastAPI, WebSocket
-from deep_translator import GoogleTranslator
-from speech import speech_to_text
-from emotion import detect_emotion
 import json
-import tempfile
 import os
+import tempfile
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from deep_translator import GoogleTranslator
+
+from backend.emotion import detect_emotion
+from backend.speech import speech_to_text
 
 app = FastAPI()
 
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+
 @app.get("/")
-def home():
-    return {"message": "Backend is working 🚀"}
+async def read_index():
+    return FileResponse("frontend/index.html")
+
+
+def convert_to_english(text, language):
+    if not text:
+        return ""
+
+    if language == "en":
+        return text
+
+    try:
+        return GoogleTranslator(source="auto", target="en").translate(text)
+    except Exception:
+        return "English conversion unavailable."
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-
     await websocket.accept()
 
-    while True:
+    try:
+        while True:
+            audio_bytes = await websocket.receive_bytes()
 
-        # Receive audio
-        audio_bytes = await websocket.receive_bytes()
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+                tmp.write(audio_bytes)
+                tmp_path = tmp.name
 
-        # Save temp audio file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-            tmp.write(audio_bytes)
-            tmp_path = tmp.name
+            try:
+                speech = speech_to_text(tmp_path)
+                text = speech["text"]
 
-        # 🎤 Speech to Text
-        text, language = speech_to_text(tmp_path)
+                response = {
+                    "text": text or "No speech detected.",
+                    "english_text": convert_to_english(text, speech["language"]),
+                    "language": speech["language"],
+                    "language_name": speech["language_name"],
+                    "emotion": detect_emotion(text) if text else "neutral",
+                }
+            except Exception as exc:
+                response = {
+                    "error": str(exc),
+                    "text": "Could not analyze this recording.",
+                    "english_text": "English conversion unavailable.",
+                    "language": "unknown",
+                    "language_name": "Unknown",
+                    "emotion": "unknown",
+                }
+            finally:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
 
-        # 🌍 Translate to English (for emotion model)
-        translated_text = GoogleTranslator(
-            source='auto',
-            target='en'
-        ).translate(text)
-
-        # 😊 Emotion Detection
-        emotion = detect_emotion(translated_text)
-
-        # Delete temp file
-        os.remove(tmp_path)
-
-        # Send response
-        response = {
-            "text": text,
-            "language": language,
-            "emotion": emotion
-        }
-
-        await websocket.send_text(
-            json.dumps(response, ensure_ascii=False)
-        )
+            await websocket.send_text(json.dumps(response, ensure_ascii=False))
+    except WebSocketDisconnect:
+        return

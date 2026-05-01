@@ -5,12 +5,22 @@ import tempfile
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from deep_translator import GoogleTranslator
 
 from backend.emotion import detect_emotion
 from backend.speech import speech_to_text
 
 app = FastAPI()
+
+# Add CORS middleware to allow connections from any origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 

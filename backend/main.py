@@ -43,7 +43,7 @@ def convert_to_english(text, language):
         return "English conversion unavailable."
 
 
-@app.websocket("/ws")
+@app.websocket("/audio-stream")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
 

@@ -17,7 +17,8 @@ let playbackLipSyncTimer;
 let blendState = createBlendState();
 let blendTarget = createBlendState();
 
-const socketUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`;
+const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+const socketUrl = `${protocol}://${location.host}/audio-stream`;
 
 const startBtn = document.getElementById('start-btn');
 const stopBtn = document.getElementById('stop-btn');
@@ -110,7 +111,8 @@ async function startListening() {
         stopBtn.disabled = false;
         setStatus('Listening...');
     } catch (error) {
-        showError(error.message);
+        console.error("Start listening error:", error);
+        showError(`Error: ${error.message}. Try the direct link.`);
         resetControls();
     }
 }
@@ -165,7 +167,13 @@ function handleServerMessage(event) {
 function waitForSocket(ws) {
     return new Promise((resolve, reject) => {
         ws.onopen = resolve;
-        ws.onerror = () => reject(new Error('Could not connect to backend WebSocket.'));
+        ws.onerror = (e) => {
+            console.error("Socket error details:", e);
+            reject(new Error('Connection failed. This might be a network block or server startup issue.'));
+        };
+        ws.onclose = (e) => {
+            console.log("Socket closed:", e.code, e.reason);
+        };
     });
 }
 

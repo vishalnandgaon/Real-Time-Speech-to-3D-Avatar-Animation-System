@@ -22,12 +22,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+# Robust directory finding
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+frontend_dir = os.path.join(base_dir, "frontend")
+if not os.path.exists(frontend_dir):
+    frontend_dir = "frontend"
+
+app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
 
 @app.get("/")
 async def read_index():
-    return FileResponse("frontend/index.html")
+    index_path = os.path.join(frontend_dir, "index.html")
+    if not os.path.exists(index_path):
+        index_path = "frontend/index.html"
+    return FileResponse(index_path)
 
 
 def convert_to_english(text, language):
@@ -44,6 +53,7 @@ def convert_to_english(text, language):
 
 
 @app.websocket("/audio-stream")
+@app.websocket("/audio-stream/")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
 
